@@ -15,7 +15,7 @@ Installation
 
 Clone this repository
 
-    git clone git://github.com/isaacs/npm.git %HOMEPATH%\.nvmw
+    git clone git://github.com/hakobera/nvmw.git %HOMEPATH%\.nvmw
 
 To activate nvm, you need to set NVMW_HOME, and add it to PATH environment variable
 
