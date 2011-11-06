@@ -25,9 +25,11 @@ Usage
 -----
 
 To download and install the v0.6.0, and make npm, do this:
+
     nvmw install v0.6.0
 
 And then in any new command prompt just use the installed version:
+
     nvmw use v0.6.0
 
 LISENCE
