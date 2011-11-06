@@ -7,8 +7,8 @@ Prerequirements
 
 You'll need to following software, before installing nvmw.
 
-- git
-- python 2.5+
+- [msysgit](http://code.google.com/p/msysgit/ "msysgit")
+- [python 2.5+)(http://www.activestate.com/activepython "ActivePython")
 
 Installation
 ------------
@@ -24,13 +24,15 @@ To activate nvm, you need to set NVMW_HOME, and add it to PATH environment varia
 Usage
 -----
 
-To download and install the v0.6.0, and make npm, do this:
+    Usage:
+      nvmw help                    Show this message
+      nvmw install [version]       Download and install a [version]
+      nvmw use [version]           Modify PATH to use [version]
+      nvmw ls                      List installed versions
 
-    nvmw install v0.6.0
-
-And then in any new command prompt just use the installed version:
-
-    nvmw use v0.6.0
+    Example:
+      nvmw install v0.6.0          Install a specific version number
+      nvmw use v0.6.0              Use the specific version
 
 LISENCE
 -------

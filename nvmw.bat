@@ -1,21 +1,25 @@
 @echo off
 
-set NVMW_HOME=%~dp0
-set NVMW_CMD=%1
+if "%NVMW_HOME%" == "" set NVMW_HOME=%~dp0
 
-if "%NVMW_CMD%" == "install" (
+if "%PATH_ORG%" == "" (
+  set PATH_ORG=%PATH%
+)
+
+if "%1" == "install" (
   call :install %2
   if not %ERRORLEVEL% == 1 call :use %2
-) else if "%NVMW_CMD%" == "use" (
+) else if "%1" == "use" (
   call :use %2
+) else if "%1" == "ls" (
+  call :ls
 ) else (
-  echo usage: nvmw.bat install [version]
-  exit /b 1
+  call :help
 )
 exit /b %ERRORLEVEL%
 
 ::===========================================================
-:: Install function
+:: install : Install specified version node and npm
 ::===========================================================
 :install
 setlocal
@@ -50,21 +54,54 @@ if not exist %NODE_EXE_FILE% (
 )
 
 ::===========================================================
-:: Use function
+:: use : Change current version
 ::===========================================================
 :use
 setlocal
-
 set NODE_VERSION=%1
 set NODE_HOME=%NVMW_HOME%\%NODE_VERSION%
 
 if not exist %NODE_HOME% (
-    echo Node %NODE_VERSION% is not installed
-    exit /b 1
+  echo Node %NODE_VERSION% is not installed
+  exit /b 1
 )
 
 endlocal
 
 echo Use Node %1
-set PATH=%PATH%;%NVMW_HOME%\%1
+set NVMW_CURRENT=%1
+set PATH=%PATH_ORG%;%NVMW_HOME%\%1
+exit /b 0
+
+::===========================================================
+:: ls : List installed versions
+::===========================================================
+:ls
+setlocal
+dir %NVMW_HOME%\v* /b /ad
+if "%NVMW_CURRENT%" == "" (
+  set NVMW_CURRENT_V=none
+) else (
+  set NVMW_CURRENT_V=%NVMW_CURRENT%
+)
+echo Current: %NVMW_CURRENT_V%
+endlocal
+exit /b 0
+
+::===========================================================
+:: help : Show help message
+::===========================================================
+:help
+echo;
+echo Node Version Manager for Windows
+echo;
+echo Usage:
+echo   nvmw help                    Show this message
+echo   nvmw install [version]       Download and install a [version]
+echo   nvmw use [version]           Modify PATH to use [version]
+echo   nvmw ls                      List installed versions
+echo;
+echo Example:
+echo   nvmw install v0.6.0          Install a specific version number
+echo   nvmw use v0.6.0              Use the specific version
 exit /b 0
