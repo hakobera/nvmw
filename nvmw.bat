@@ -12,7 +12,7 @@ if not defined PATH_ORG (
 
 if "%1" == "install" (
   call :install %2
-  if not %ERRORLEVEL% == 1 call :use %2
+  if not ERRORLEVEL == 1 call :use %2
 ) else if "%1" == "use" (
   call :use %2
 ) else if "%1" == "ls" (
@@ -41,21 +41,37 @@ set PATH=%PATH%;%NODE_HOME%
 :: Download node.exe
 cscript %NVMW_HOME%\fget.js %NODE_EXE_URL% %NODE_EXE_FILE%
 if not exist %NODE_EXE_FILE% (
-   echo Download %NODE_EXE_FILE% from %NODE_EXE_URL% failed
-   rd /Q /S %NODE_HOME%
-   endlocal
-   exit /b 1
+  echo Download %NODE_EXE_FILE% from %NODE_EXE_URL% failed
+	goto install_error
 ) else (
-    :: Install npm
-    echo Start install npm
-    cmd /c git config --system http.sslcainfo /bin/curl-ca-bundle.crt
-    cmd /c git clone --recursive git://github.com/isaacs/npm.git %NODE_HOME%\npm
-    cmd /c node %NODE_HOME%\npm\cli.js install npm -gf
+  echo Start install npm
+    
+  cmd /c git config --system http.sslcainfo /bin/curl-ca-bundle.crt
+	if ERRORLEVEL == 1 goto install_error
 
-    echo Finished
-    endlocal
-    exit /b 0
+	set CD_ORG=%CD%
+	cd %NODE_HOME%
+  cmd /c git clone --recursive git://github.com/isaacs/npm.git
+	cd %CD_ORG%
+	if ERRORLEVEL == 1 goto install_error
+    
+	set CD_ORG=%CD%
+	set TMP_ORG=%TMP%
+	set TMP=%NODE_HOME%
+	cd %NODE_HOME%\npm
+	cmd /c node cli.js install npm -gf
+	cd %CD_ORG%
+	set TMP=%TMP_ORG%
+	if ERRORLEVEL == 1 goto install_error
+
+  echo Finished
+  endlocal
+  exit /b 0
 )
+:install_error
+	rd /Q /S %NODE_HOME%
+  endlocal
+  exit /b 1
 
 ::===========================================================
 :: use : Change current version
@@ -83,7 +99,7 @@ exit /b 0
 :ls
 setlocal
 dir %NVMW_HOME%\v* /b /ad
-if "%NVMW_CURRENT%" == "" (
+if not defined NVMW_CURRENT (
   set NVMW_CURRENT_V=none
 ) else (
   set NVMW_CURRENT_V=%NVMW_CURRENT%
