@@ -56,12 +56,9 @@ if not exist %NODE_EXE_FILE% (
 	if ERRORLEVEL == 1 goto install_error
     
 	set CD_ORG=%CD%
-	set TMP_ORG=%TMP%
-	set TMP=%NODE_HOME%
 	cd %NODE_HOME%\npm
 	cmd /c node cli.js install npm -gf
 	cd %CD_ORG%
-	set TMP=%TMP_ORG%
 	if ERRORLEVEL == 1 goto install_error
 
   echo Finished
