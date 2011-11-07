@@ -2,10 +2,10 @@ Node Version Manager for Windows
 ================================
 nvmw is a simple Node Version Manager for Windows.
 
-Prerequirements
----------------
+Prerequisites
+-------------
 
-You'll need to following software, before installing nvmw.
+You'll need to install the following software before installing nvmw:
 
 - [git](http://code.google.com/p/msysgit/ "msysgit")
 - [python 2.7](http://www.activestate.com/activepython "ActivePython")
@@ -13,11 +13,11 @@ You'll need to following software, before installing nvmw.
 Installation
 ------------
 
-Clone this repository
+Clone this repository:
 
     git clone git://github.com/hakobera/nvmw.git "%HOMEPATH%\.nvmw"
 
-To activate nvm, you need to set NVMW_HOME, and add it to PATH environment variable
+To activate nvm, you need to set NVMW_HOME, and add it to your PATH environment variable
 
     set PATH=%PATH%;"%HOMEPATH%\.nvmw"
 
