@@ -1,8 +1,12 @@
 @echo off
 
-if "%NVMW_HOME%" == "" set NVMW_HOME=%~dp0
+if not defined NVMW_HOME (
+  echo set NVMW_HOME="%~dp0"
+  set NVMW_HOME="%~dp0"
+)
 
-if "%PATH_ORG%" == "" (
+if not defined PATH_ORG (
+  echo set PATH_ORG=%PATH%
   set PATH_ORG=%PATH%
 )
 
