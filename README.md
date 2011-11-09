@@ -15,11 +15,11 @@ Installation
 
 Clone this repository:
 
-    git clone git://github.com/hakobera/nvmw.git "%HOMEPATH%\.nvmw"
+    git clone git://github.com/hakobera/nvmw.git "%HOMEDRIVE%%HOMEPATH%\.nvmw"
 
 To activate nvmw, you need to set NVMW_HOME, and add it to your PATH environment variable
 
-    set PATH=%PATH%;"%HOMEPATH%\.nvmw"
+    set PATH=%PATH%;"%HOMEDRIVE%%HOMEPATH%\.nvmw"
 
 Usage
 -----
