@@ -52,40 +52,36 @@ set NODE_EXE_URL=http://nodejs.org/dist/%NODE_VERSION%/node.exe
 
 echo Start installing Node %NODE_VERSION%
 
-mkdir "%NVMW_HOME%\%NODE_VERSION%"
-set NODE_HOME="%NVMW_HOME%\%NODE_VERSION%"
-set NODE_EXE_FILE="%NODE_HOME%\node.exe"
-set "PATH=%PATH%;%NODE_HOME%"
+set NODE_HOME=%NVMW_HOME%%NODE_VERSION%
+mkdir "%NODE_HOME%"
+set NODE_EXE_FILE=%NODE_HOME%\node.exe
 
-:: Download node.exe
-cscript "%NVMW_HOME%\fget.js" %NODE_EXE_URL% "%NODE_EXE_FILE%"
-if not exist %NODE_EXE_FILE% (
+if not exist "%NODE_EXE_FILE%" (
+  :: download node.exe
+  cscript "%NVMW_HOME%\fget.js" %NODE_EXE_URL% "%NODE_EXE_FILE%"
+)
+
+if not exist "%NODE_EXE_FILE%" (
   echo Download %NODE_EXE_FILE% from %NODE_EXE_URL% failed
-	goto install_error
+  goto install_error
 ) else (
   echo Start install npm
-    
-  cmd /c git config --system http.sslcainfo /bin/curl-ca-bundle.crt
-	if ERRORLEVEL == 1 goto install_error
 
-	set CD_ORG="%CD%"
-	cd "%NODE_HOME%"
+  set "CD_ORG=%CD%"
+  cmd /c git config --system http.sslcainfo /bin/curl-ca-bundle.crt
+  cd "%NODE_HOME%"
   cmd /c git clone --recursive git://github.com/isaacs/npm.git
-	cd "%CD_ORG%"
-	if ERRORLEVEL == 1 goto install_error
-    
-	set "CD_ORG=%CD%"
-	cd "%NODE_HOME%\npm"
-	cmd /c node cli.js install npm -gf
-	cd "%CD_ORG%"
-	if ERRORLEVEL == 1 goto install_error
+  cd "%NODE_HOME%\npm"
+  cmd /c "%NODE_EXE_FILE%" cli.js install npm -gf
+  cd "%CD_ORG%"
+  if not exist "%NODE_HOME%\npm.cmd" goto install_error
 
   echo Finished
   endlocal
   exit /b 0
 )
 :install_error
-	rd /Q /S "%NODE_HOME%"
+  rd /Q /S "%NODE_HOME%"
   endlocal
   exit /b 1
 
@@ -126,7 +122,7 @@ if not exist %NODE_EXE_FILE% (
 :use
 setlocal
 set NODE_VERSION=%1
-set NODE_HOME="%NVMW_HOME%\%NODE_VERSION%"
+set NODE_HOME="%NVMW_HOME%%NODE_VERSION%"
 
 if not exist "%NODE_HOME%" (
   echo Node %NODE_VERSION% is not installed
@@ -135,9 +131,9 @@ if not exist "%NODE_HOME%" (
 
 endlocal
 
-echo Use Node %1
+echo Now using Node %1
 set NVMW_CURRENT=%1
-set "PATH=%PATH_ORG%;%NVMW_HOME%\%1"
+set "PATH=%PATH_ORG%;%NVMW_HOME%;%NVMW_HOME%\%1"
 exit /b 0
 
 ::===========================================================
