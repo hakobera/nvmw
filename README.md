@@ -27,6 +27,7 @@ Usage
     Usage:
       nvmw help                    Show this message
       nvmw install [version]       Download and install a [version]
+      nvmw uninstall [version]     Uninstall a [version]
       nvmw use [version]           Modify PATH to use [version]
       nvmw ls                      List installed versions
 
