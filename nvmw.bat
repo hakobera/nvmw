@@ -1,12 +1,10 @@
 @echo off
 
 if not defined NVMW_HOME (
-  echo set NVMW_HOME="%~dp0"
   set NVMW_HOME="%~dp0"
 )
 
 if not defined PATH_ORG (
-  echo set "PATH_ORG=%PATH%"
   set "PATH_ORG=%PATH%"
 )
 
@@ -17,10 +15,31 @@ if "%1" == "install" (
   call :use %2
 ) else if "%1" == "ls" (
   call :ls
+) else if "%1" == "uninstall" (
+  call :uninstall %2
 ) else (
   call :help
 )
 exit /b %ERRORLEVEL%
+
+::===========================================================
+:: help : Show help message
+::===========================================================
+:help
+echo;
+echo Node Version Manager for Windows
+echo;
+echo Usage:
+echo   nvmw help                    Show this message
+echo   nvmw install [version]       Download and install a [version]
+echo   nvmw uninstall [version]     Uninstall a [version]
+echo   nvmw use [version]           Modify PATH to use [version]
+echo   nvmw ls                      List installed versions
+echo;
+echo Example:
+echo   nvmw install v0.6.0          Install a specific version number
+echo   nvmw use v0.6.0              Use the specific version
+exit /b 0
 
 ::===========================================================
 :: install : Install specified version node and npm
@@ -33,13 +52,13 @@ set NODE_EXE_URL=http://nodejs.org/dist/%NODE_VERSION%/node.exe
 
 echo Start installing Node %NODE_VERSION%
 
-mkdir %NVMW_HOME%\%NODE_VERSION%
-set NODE_HOME=%NVMW_HOME%\%NODE_VERSION%
-set NODE_EXE_FILE=%NODE_HOME%\node.exe
-set PATH=%PATH%;%NODE_HOME%
+mkdir "%NVMW_HOME%\%NODE_VERSION%"
+set NODE_HOME="%NVMW_HOME%\%NODE_VERSION%"
+set NODE_EXE_FILE="%NODE_HOME%\node.exe"
+set "PATH=%PATH%;%NODE_HOME%"
 
 :: Download node.exe
-cscript %NVMW_HOME%\fget.js %NODE_EXE_URL% %NODE_EXE_FILE%
+cscript "%NVMW_HOME%\fget.js" %NODE_EXE_URL% "%NODE_EXE_FILE%"
 if not exist %NODE_EXE_FILE% (
   echo Download %NODE_EXE_FILE% from %NODE_EXE_URL% failed
 	goto install_error
@@ -49,16 +68,16 @@ if not exist %NODE_EXE_FILE% (
   cmd /c git config --system http.sslcainfo /bin/curl-ca-bundle.crt
 	if ERRORLEVEL == 1 goto install_error
 
-	set CD_ORG=%CD%
-	cd %NODE_HOME%
+	set CD_ORG="%CD%"
+	cd "%NODE_HOME%"
   cmd /c git clone --recursive git://github.com/isaacs/npm.git
-	cd %CD_ORG%
+	cd "%CD_ORG%"
 	if ERRORLEVEL == 1 goto install_error
     
-	set CD_ORG=%CD%
-	cd %NODE_HOME%\npm
+	set "CD_ORG=%CD%"
+	cd "%NODE_HOME%\npm"
 	cmd /c node cli.js install npm -gf
-	cd %CD_ORG%
+	cd "%CD_ORG%"
 	if ERRORLEVEL == 1 goto install_error
 
   echo Finished
@@ -66,9 +85,40 @@ if not exist %NODE_EXE_FILE% (
   exit /b 0
 )
 :install_error
-	rd /Q /S %NODE_HOME%
+	rd /Q /S "%NODE_HOME%"
   endlocal
   exit /b 1
+
+::===========================================================
+:: uninstall : Uninstall specified version
+::===========================================================
+:uninstall
+setlocal
+
+set NODE_VERSION=%1
+
+if "%NVMW_CURRENT%" == "%NODE_VERSION%" (
+  echo Cannot uninstall currently-active Node version, %NODE_VERSION%
+  exit /b 1
+)
+
+set NODE_HOME="%NVMW_HOME%\%NODE_VERSION%"
+set NODE_EXE_FILE="%NODE_HOME%\node.exe"
+
+if not exist %NODE_EXE_FILE% (
+  echo %NODE_VERSION% is not installed
+  exit /b 1
+) else (
+  rd /Q /S "%NODE_HOME%"
+  if ERRORLEVEL == 1 (
+    echo Cannot uninstall Node version, %NODE_VERSION%
+    exit /b 1
+  ) else (
+    echo Uninstalled Node %NODE_VERSION%
+    endlocal
+    exit /b 0
+  )
+)
 
 ::===========================================================
 :: use : Change current version
@@ -76,9 +126,9 @@ if not exist %NODE_EXE_FILE% (
 :use
 setlocal
 set NODE_VERSION=%1
-set NODE_HOME=%NVMW_HOME%\%NODE_VERSION%
+set NODE_HOME="%NVMW_HOME%\%NODE_VERSION%"
 
-if not exist %NODE_HOME% (
+if not exist "%NODE_HOME%" (
   echo Node %NODE_VERSION% is not installed
   exit /b 1
 )
@@ -87,7 +137,7 @@ endlocal
 
 echo Use Node %1
 set NVMW_CURRENT=%1
-set PATH=%PATH_ORG%;%NVMW_HOME%\%1
+set "PATH=%PATH_ORG%;%NVMW_HOME%\%1"
 exit /b 0
 
 ::===========================================================
@@ -95,7 +145,7 @@ exit /b 0
 ::===========================================================
 :ls
 setlocal
-dir %NVMW_HOME%\v* /b /ad
+dir "%NVMW_HOME%\v*" /b /ad
 if not defined NVMW_CURRENT (
   set NVMW_CURRENT_V=none
 ) else (
@@ -103,22 +153,4 @@ if not defined NVMW_CURRENT (
 )
 echo Current: %NVMW_CURRENT_V%
 endlocal
-exit /b 0
-
-::===========================================================
-:: help : Show help message
-::===========================================================
-:help
-echo;
-echo Node Version Manager for Windows
-echo;
-echo Usage:
-echo   nvmw help                    Show this message
-echo   nvmw install [version]       Download and install a [version]
-echo   nvmw use [version]           Modify PATH to use [version]
-echo   nvmw ls                      List installed versions
-echo;
-echo Example:
-echo   nvmw install v0.6.0          Install a specific version number
-echo   nvmw use v0.6.0              Use the specific version
 exit /b 0
