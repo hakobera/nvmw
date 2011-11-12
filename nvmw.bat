@@ -6,8 +6,8 @@ if not defined NVMW_HOME (
 )
 
 if not defined PATH_ORG (
-  echo set PATH_ORG=%PATH%
-  set PATH_ORG=%PATH%
+  echo set "PATH_ORG=%PATH%"
+  set "PATH_ORG=%PATH%"
 )
 
 if "%1" == "install" (
