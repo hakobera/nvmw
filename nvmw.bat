@@ -52,9 +52,9 @@ set NODE_EXE_URL=http://nodejs.org/dist/%NODE_VERSION%/node.exe
 
 echo Start installing Node %NODE_VERSION%
 
-set NODE_HOME=%NVMW_HOME%%NODE_VERSION%
+set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"
 mkdir "%NODE_HOME%"
-set NODE_EXE_FILE=%NODE_HOME%\node.exe
+set "NODE_EXE_FILE=%NODE_HOME%\node.exe"
 
 if not exist "%NODE_EXE_FILE%" (
   :: download node.exe
@@ -98,8 +98,8 @@ if "%NVMW_CURRENT%" == "%NODE_VERSION%" (
   exit /b 1
 )
 
-set NODE_HOME="%NVMW_HOME%\%NODE_VERSION%"
-set NODE_EXE_FILE="%NODE_HOME%\node.exe"
+set "NODE_HOME=%NVMW_HOME%\%NODE_VERSION%"
+set "NODE_EXE_FILE=%NODE_HOME%\node.exe"
 
 if not exist %NODE_EXE_FILE% (
   echo %NODE_VERSION% is not installed
@@ -122,7 +122,7 @@ if not exist %NODE_EXE_FILE% (
 :use
 setlocal
 set NODE_VERSION=%1
-set NODE_HOME="%NVMW_HOME%%NODE_VERSION%"
+set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"
 
 if not exist "%NODE_HOME%" (
   echo Node %NODE_VERSION% is not installed
