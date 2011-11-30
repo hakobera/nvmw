@@ -101,7 +101,7 @@ if "%NVMW_CURRENT%" == "%NODE_VERSION%" (
 set "NODE_HOME=%NVMW_HOME%\%NODE_VERSION%"
 set "NODE_EXE_FILE=%NODE_HOME%\node.exe"
 
-if not exist %NODE_EXE_FILE% (
+if not exist "%NODE_EXE_FILE%" (
   echo %NODE_VERSION% is not installed
   exit /b 1
 ) else (
