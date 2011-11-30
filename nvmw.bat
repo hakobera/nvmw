@@ -1,7 +1,7 @@
 @echo off
 
 if not defined NVMW_HOME (
-  set NVMW_HOME="%~dp0"
+  set "NVMW_HOME=%~dp0"
 )
 
 if not defined PATH_ORG (
