@@ -70,11 +70,16 @@ if not exist "%NODE_EXE_FILE%" (
   set "CD_ORG=%CD%"
   cmd /c git config --system http.sslcainfo /bin/curl-ca-bundle.crt
   cd "%NODE_HOME%"
-  cmd /c git clone --recursive git://github.com/isaacs/npm.git
+  cmd /c git clone git://github.com/isaacs/npm.git
   cd "%NODE_HOME%\npm"
-  cmd /c "%NODE_EXE_FILE%" cli.js install npm -gf
+  cmd /c git fetch
+  cmd /c git checkout -b tar-js origin/tar-js
+  cd "%NODE_HOME%\npm"
+  cmd /c git submodule update --init --recursive
+  cmd /c "%NODE_EXE_FILE%" cli.js install -g
   cd "%CD_ORG%"
-  if not exist "%NODE_HOME%\npm.cmd" goto install_error
+  if not exist "%NODE_HOME%\npm.cmd" goto install_error  
+  echo npm install ok
 
   echo Finished
   endlocal
