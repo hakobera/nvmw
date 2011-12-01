@@ -8,7 +8,7 @@ Prerequisites
 You'll need to install the following software before installing nvmw:
 
 - [git](http://code.google.com/p/msysgit/ "msysgit")
-- [python 2.7](http://www.activestate.com/activepython "ActivePython")
+- [python 2.7+](http://python.org/download/)
 
 Installation
 ------------
