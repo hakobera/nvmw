@@ -49,12 +49,13 @@ setlocal
 
 set NODE_VERSION=%1
 set NODE_EXE_URL=http://nodejs.org/dist/%NODE_VERSION%/node.exe
-
+set NPM_URL=http://npmjs.org/dist/npm-1.1.0-3.zip
 echo Start installing Node %NODE_VERSION%
 
 set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"
 mkdir "%NODE_HOME%"
 set "NODE_EXE_FILE=%NODE_HOME%\node.exe"
+set "NPM_ZIP_FILE=%NODE_HOME%\npm.zip"
 
 if not exist "%NODE_EXE_FILE%" (
   :: download node.exe
@@ -67,16 +68,11 @@ if not exist "%NODE_EXE_FILE%" (
 ) else (
   echo Start install npm
 
+  cscript "%NVMW_HOME%\fget.js" %NPM_URL% "%NPM_ZIP_FILE%"
+
   set "CD_ORG=%CD%"
-  cmd /c git config --system http.sslcainfo /bin/curl-ca-bundle.crt
   cd "%NODE_HOME%"
-  cmd /c git clone git://github.com/isaacs/npm.git
-  cd "%NODE_HOME%\npm"
-  cmd /c git fetch
-  cmd /c git checkout -b tar-js origin/tar-js
-  cd "%NODE_HOME%\npm"
-  cmd /c git submodule update --init --recursive
-  cmd /c "%NODE_EXE_FILE%" cli.js install -g
+  cscript "%NVMW_HOME%\unzip.js" "%NPM_ZIP_FILE%" "%NODE_HOME%"  
   cd "%CD_ORG%"
   if not exist "%NODE_HOME%\npm.cmd" goto install_error  
   echo npm install ok
@@ -106,7 +102,7 @@ if "%NVMW_CURRENT%" == "%NODE_VERSION%" (
 set "NODE_HOME=%NVMW_HOME%\%NODE_VERSION%"
 set "NODE_EXE_FILE=%NODE_HOME%\node.exe"
 
-if not exist "%NODE_EXE_FILE%" (
+if not exist "%NODE_HOME%" (
   echo %NODE_VERSION% is not installed
   exit /b 1
 ) else (

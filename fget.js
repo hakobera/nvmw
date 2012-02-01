@@ -47,7 +47,7 @@ function downloadFile(url, filename, callback) {
   var xhr = WScript.createObject('Msxml2.XMLHTTP')
     , ostream = new ActiveXObject("Adodb.Stream");
 
-  log('Download node.exe from ' + url + ', and save it as ' + filename);
+  log('Download from ' + url + ', and save it as ' + filename);
 
   xhr.onreadystatechange = function() {
     if (xhr.readyState === 4) {
