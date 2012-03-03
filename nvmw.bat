@@ -49,7 +49,8 @@ setlocal
 
 set NODE_VERSION=%1
 set NODE_EXE_URL=http://nodejs.org/dist/%NODE_VERSION%/node.exe
-set NPM_URL=http://npmjs.org/dist/npm-1.1.0-3.zip
+set NPM_VERSION=1.1.4
+set NPM_URL=http://npmjs.org/dist/npm-%NPM_VERSION%.zip
 echo Start installing Node %NODE_VERSION%
 
 set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"
