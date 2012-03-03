@@ -76,7 +76,7 @@ if not exist "%NODE_EXE_FILE%" (
   cscript "%NVMW_HOME%\unzip.js" "%NPM_ZIP_FILE%" "%NODE_HOME%"  
   cd "%CD_ORG%"
   if not exist "%NODE_HOME%\npm.cmd" goto install_error  
-  echo npm install ok
+  echo npm %NPM_VERSION% install ok
 
   echo Finished
   endlocal
