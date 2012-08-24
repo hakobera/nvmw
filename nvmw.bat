@@ -49,8 +49,6 @@ setlocal
 
 set NODE_VERSION=%1
 set NODE_EXE_URL=http://nodejs.org/dist/%NODE_VERSION%/node.exe
-set NPM_VERSION=1.1.9
-set NPM_URL=http://npmjs.org/dist/npm-%NPM_VERSION%.zip
 echo Start installing Node %NODE_VERSION%
 
 set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"
@@ -69,7 +67,7 @@ if not exist "%NODE_EXE_FILE%" (
 ) else (
   echo Start install npm
 
-  cscript "%NVMW_HOME%\fget.js" %NPM_URL% "%NPM_ZIP_FILE%"
+  "%NODE_EXE_FILE%" "%NVMW_HOME%\get_npm.js" "%NODE_HOME%" %NODE_VERSION%
 
   set "CD_ORG=%CD%"
   cd "%NODE_HOME%"
