@@ -68,6 +68,9 @@ if not exist "%NODE_EXE_FILE%" (
   echo Start install npm
 
   "%NODE_EXE_FILE%" "%NVMW_HOME%\get_npm.js" "%NODE_HOME%" %NODE_VERSION%
+  if not exist %NPM_ZIP_FILE% (
+    exit /b 0;
+  )
 
   set "CD_ORG=%CD%"
   cd "%NODE_HOME%"

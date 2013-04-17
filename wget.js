@@ -1,5 +1,4 @@
-var http = require('http'),
-    url = require('url'),
+var url = require('url'),
     fs = require('fs');
 
 function wget(uri, callback) {
@@ -10,7 +9,13 @@ function wget(uri, callback) {
     var filename = paths[paths.length - 1];
     console.log(filename);
 
+    var http = require(uri.indexOf('https') === 0 ? 'https' : 'http');
+
     var req = http.get(options, function (res) {
+        if (res.statusCode !== 200) {
+            callback(null);
+            return;
+        }
         var contentLength = parseInt(res.headers['content-length'], 10);
         console.log('Content length is %d', contentLength);
 
