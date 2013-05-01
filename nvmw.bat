@@ -136,7 +136,7 @@ endlocal
 
 echo Now using Node %1
 set NVMW_CURRENT=%1
-set "PATH=%PATH_ORG%;%NVMW_HOME%;%NVMW_HOME%\%1"
+set "PATH=%NVMW_HOME%;%NVMW_HOME%\%1;%PATH_ORG%"
 exit /b 0
 
 ::===========================================================
