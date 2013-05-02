@@ -19,7 +19,7 @@ Clone this repository:
 
 To activate nvmw, add nvmw directory to your PATH environment variable
 
-    set "PATH=%PATH%;%HOMEDRIVE%%HOMEPATH%\.nvmw"
+    set "PATH=%HOMEDRIVE%%HOMEPATH%\.nvmw;%PATH%"
 
 Usage
 -----
