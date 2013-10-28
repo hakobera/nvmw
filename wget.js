@@ -22,11 +22,10 @@ function wget(uri, callback) {
         var data = new Buffer(contentLength);
         var offset = 0;
 
-        res.on('data', function (chunk) {
-            var buf = new Buffer(chunk);
-            console.log('Download %d bytes ...', offset);
+        res.on('data', function (buf) {
             buf.copy(data, offset);
             offset += buf.length;
+            console.log('Download %d bytes ...', offset);
         });
 
         res.on('end', function () {
