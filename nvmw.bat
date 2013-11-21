@@ -48,7 +48,7 @@ exit /b 0
 setlocal
 
 set NODE_VERSION=%1
-if not %NODE_VERSION:~0,1% == "v" (
+if not %NODE_VERSION:~0,1% == v (
   set NODE_VERSION=v%1
 )
 set NODE_EXE_URL=http://nodejs.org/dist/%NODE_VERSION%/node.exe
@@ -98,7 +98,7 @@ if not exist "%NODE_EXE_FILE%" (
 setlocal
 
 set NODE_VERSION=%1
-if not %NODE_VERSION:~0,1% == "v" (
+if not %NODE_VERSION:~0,1% == v (
   set NODE_VERSION=v%1
 )
 
@@ -131,7 +131,7 @@ if not exist "%NODE_HOME%" (
 :use
 setlocal
 set NODE_VERSION=%1
-if not %NODE_VERSION:~0,1% == "v" (
+if not %NODE_VERSION:~0,1% == v (
   set NODE_VERSION=v%1
 )
 set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"
@@ -145,7 +145,7 @@ endlocal
 
 echo Now using Node %1
 set NVMW_CURRENT=%1
-if not %NVMW_CURRENT:~0,1% == "v" (
+if not %NVMW_CURRENT:~0,1% == v (
   set NVMW_CURRENT=v%1
 )
 set "PATH=%NVMW_HOME%;%NVMW_HOME%\%1;%PATH_ORG%"
