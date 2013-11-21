@@ -37,8 +37,8 @@ echo   nvmw use [version]           Modify PATH to use [version]
 echo   nvmw ls                      List installed versions
 echo;
 echo Example:
-echo   nvmw install v0.6.0          Install a specific version number
-echo   nvmw use v0.6.0              Use the specific version
+echo   nvmw install v0.10.21        Install a specific version number
+echo   nvmw use v0.10.21            Use the specific version
 exit /b 0
 
 ::===========================================================
@@ -48,6 +48,9 @@ exit /b 0
 setlocal
 
 set NODE_VERSION=%1
+if %NODE_VERSION:~0,1% != "v" (
+  set NODE_VERSION=v%1
+)
 set NODE_EXE_URL=http://nodejs.org/dist/%NODE_VERSION%/node.exe
 echo Start installing Node %NODE_VERSION%
 
@@ -74,9 +77,9 @@ if not exist "%NODE_EXE_FILE%" (
 
   set "CD_ORG=%CD%"
   cd "%NODE_HOME%"
-  cscript "%NVMW_HOME%\unzip.js" "%NPM_ZIP_FILE%" "%NODE_HOME%"  
+  cscript "%NVMW_HOME%\unzip.js" "%NPM_ZIP_FILE%" "%NODE_HOME%"
   cd "%CD_ORG%"
-  if not exist "%NODE_HOME%\npm.cmd" goto install_error  
+  if not exist "%NODE_HOME%\npm.cmd" goto install_error
   echo npm %NPM_VERSION% install ok
 
   echo Finished
@@ -95,6 +98,9 @@ if not exist "%NODE_EXE_FILE%" (
 setlocal
 
 set NODE_VERSION=%1
+if %NODE_VERSION:~0,1% != "v" (
+  set NODE_VERSION=v%1
+)
 
 if "%NVMW_CURRENT%" == "%NODE_VERSION%" (
   echo Cannot uninstall currently-active Node version, %NODE_VERSION%
@@ -125,6 +131,9 @@ if not exist "%NODE_HOME%" (
 :use
 setlocal
 set NODE_VERSION=%1
+if %NODE_VERSION:~0,1% != "v" (
+  set NODE_VERSION=v%1
+)
 set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"
 
 if not exist "%NODE_HOME%" (
@@ -136,6 +145,9 @@ endlocal
 
 echo Now using Node %1
 set NVMW_CURRENT=%1
+if %NVMW_CURRENT:~0,1% != "v" (
+  set NVMW_CURRENT=v%1
+)
 set "PATH=%NVMW_HOME%;%NVMW_HOME%\%1;%PATH_ORG%"
 exit /b 0
 
