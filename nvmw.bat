@@ -8,6 +8,8 @@ if not defined PATH_ORG (
   set "PATH_ORG=%PATH%"
 )
 
+IF EXIST "%PROGRAMFILES(X32)%" (set OS_ARCH=32) ELSE (set OS_ARCH=64)
+
 if "%1" == "install" (
   call :install %2
   if not ERRORLEVEL == 1 call :use %2
@@ -51,10 +53,10 @@ set NODE_VERSION=%1
 if not %NODE_VERSION:~0,1% == v (
   set NODE_VERSION=v%1
 )
-set NODE_EXE_URL=http://nodejs.org/dist/%NODE_VERSION%/node.exe
-echo Start installing Node %NODE_VERSION%
+IF (OS_ARCH==32) (set NODE_EXE_URL=http://nodejs.org/dist/%NODE_VERSION%/node.exe) ELSE (set NODE_EXE_URL=http://nodejs.org/dist/%NODE_VERSION%/x64/node.exe)
+echo Start installing Node %NODE_VERSION% (x%OS_ARCH%)
 
-set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"
+set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%\x%OS_ARCH%"
 mkdir "%NODE_HOME%"
 set "NODE_EXE_FILE=%NODE_HOME%\node.exe"
 set "NPM_ZIP_FILE=%NODE_HOME%\npm.zip"
@@ -107,7 +109,7 @@ if "%NVMW_CURRENT%" == "%NODE_VERSION%" (
   exit /b 1
 )
 
-set "NODE_HOME=%NVMW_HOME%\%NODE_VERSION%"
+set "NODE_HOME=%NVMW_HOME%\%NODE_VERSION%\x%OS_ARCH%"
 set "NODE_EXE_FILE=%NODE_HOME%\node.exe"
 
 if not exist "%NODE_HOME%" (
@@ -134,7 +136,7 @@ set NODE_VERSION=%1
 if not %NODE_VERSION:~0,1% == v (
   set NODE_VERSION=v%1
 )
-set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"
+set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%\x%OS_ARCH%"
 
 if not exist "%NODE_HOME%" (
   echo Node %NODE_VERSION% is not installed
