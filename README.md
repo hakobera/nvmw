@@ -35,10 +35,22 @@ Usage
       nvmw install v0.6.0          Install a specific version number
       nvmw use v0.6.0              Use the specific version
 
+Mirror nodejs dist
+------------------
+
+To use a mirror of the node binaries, set `$NVMW_NODEJS_ORG_MIRROR`.
+
+e.g.: In China, you use this mirror:
+
+```bash
+set "NVMW_NODEJS_ORG_MIRROR=http://dist.u.qiniudn.com"
+nvmw install 0.11.12
+```
+
 FAQ
 ---
 
-### Q. Node.exe download faild caused 'Input Error: There is no script engine for file extension ".js"' 
+### Q. Node.exe download faild caused 'Input Error: There is no script engine for file extension ".js"'
 
 Maybe you associated ".js" file to another app, not JScript engine. To fix, see [here](http://www.winhelponline.com/articles/230/1/Error-There-is-no-script-engine-for-file-extension-when-running-js-files.html)
 

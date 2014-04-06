@@ -14,6 +14,10 @@ if exist "%PROGRAMFILES(X86)%" (
   set OS_ARCH=32
 )
 
+if not defined NVMW_NODEJS_ORG_MIRROR (
+  set "NVMW_NODEJS_ORG_MIRROR=http://nodejs.org/dist"
+)
+
 if "%1" == "install" if not "%2" == "" (
   call :install %2
   if not ERRORLEVEL == 1 call :use %2
@@ -67,11 +71,14 @@ set NODE_VERSION=%1
 if not %NODE_VERSION:~0,1% == v (
   set NODE_VERSION=v%1
 )
+
 if %OS_ARCH% == 32 (
-  set NODE_EXE_URL=http://nodejs.org/dist/%NODE_VERSION%/node.exe
+  set NODE_EXE_URL=%NVMW_NODEJS_ORG_MIRROR%/%NODE_VERSION%/node.exe
 ) else (
-  set NODE_EXE_URL=http://nodejs.org/dist/%NODE_VERSION%/x64/node.exe
+  set NODE_EXE_URL=%NVMW_NODEJS_ORG_MIRROR%/%NODE_VERSION%/x64/node.exe
 )
+echo Start installing Node %NODE_VERSION% (x%OS_ARCH%)
+
 echo Start installing Node %NODE_VERSION% (x%OS_ARCH%)
 
 set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"

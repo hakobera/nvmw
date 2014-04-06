@@ -4,7 +4,8 @@ var util = require('util'),
     wget = require('./wget');
 
 var NPM_PKG_JSON_URL = 'https://raw.githubusercontent.com/joyent/node/%s/deps/npm/package.json';
-var BASE_URL = 'http://nodejs.org:80/dist/npm/npm-%s.zip';
+var NVMW_NODEJS_ORG_MIRROR = process.env.NVMW_NODEJS_ORG_MIRROR || 'http://nodejs.org/dist';
+var BASE_URL = NVMW_NODEJS_ORG_MIRROR + '/npm/npm-%s.zip';
 
 var targetDir = process.argv[2];
 var nodeVersion = process.argv[3];
