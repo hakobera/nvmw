@@ -14,18 +14,28 @@ if exist "%PROGRAMFILES(X86)%" (
   set OS_ARCH=32
 )
 
-if "%1" == "install" (
+if "%1" == "install" if not "%2" == "" (
   call :install %2
   if not ERRORLEVEL == 1 call :use %2
-) else if "%1" == "use" (
-  call :use %2
-) else if "%1" == "ls" (
-  call :ls
-) else if "%1" == "uninstall" (
-  call :uninstall %2
-) else (
-  call :help
+  exit /b %ERRORLEVEL%
 )
+
+if "%1" == "use" if not "%2" == "" (
+  call :use %2
+  exit /b %ERRORLEVEL%
+)
+
+if "%1" == "ls" (
+  call :ls
+  exit /b %ERRORLEVEL%
+)
+
+if "%1" == "uninstall" if not "%2" == "" (
+  call :uninstall %2
+  exit /b %ERRORLEVEL%
+)
+
+call :help
 exit /b %ERRORLEVEL%
 
 ::===========================================================
