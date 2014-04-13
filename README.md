@@ -35,6 +35,13 @@ Usage
       nvmw install v0.6.0          Install a specific version number
       nvmw use v0.6.0              Use the specific version
 
+FAQ
+---
+
+### Q. Node.exe download faild caused 'Input Error: There is no script engine for file extension ".js"' 
+
+Maybe you associated ".js" file to another app, not JScript engine. To fix, see [here](http://www.winhelponline.com/articles/230/1/Error-There-is-no-script-engine-for-file-extension-when-running-js-files.html)
+
 LICENSE
 -------
 (The MIT License)
