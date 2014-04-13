@@ -8,7 +8,11 @@ if not defined PATH_ORG (
   set "PATH_ORG=%PATH%"
 )
 
-IF EXIST "%PROGRAMFILES(X32)%" (set OS_ARCH=32) ELSE (set OS_ARCH=64)
+if exist "%PROGRAMFILES(X86)%" (
+  set OS_ARCH=64
+) else (
+  set OS_ARCH=32
+)
 
 if "%1" == "install" (
   call :install %2
@@ -53,7 +57,11 @@ set NODE_VERSION=%1
 if not %NODE_VERSION:~0,1% == v (
   set NODE_VERSION=v%1
 )
-IF (OS_ARCH==32) (set NODE_EXE_URL=http://nodejs.org/dist/%NODE_VERSION%/node.exe) ELSE (set NODE_EXE_URL=http://nodejs.org/dist/%NODE_VERSION%/x64/node.exe)
+if %OS_ARCH% == 32 (
+  set NODE_EXE_URL=http://nodejs.org/dist/%NODE_VERSION%/node.exe
+) else (
+  set NODE_EXE_URL=http://nodejs.org/dist/%NODE_VERSION%/x64/node.exe
+)
 echo Start installing Node %NODE_VERSION% (x%OS_ARCH%)
 
 set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"
