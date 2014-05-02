@@ -12,7 +12,7 @@ var nodeVersion = process.argv[3];
 var pkgUri = util.format(NPM_PKG_JSON_URL, nodeVersion);
 wget(pkgUri, function (filename, pkg) {
     if (filename === null) {
-        console.error('node %s is not include npm', nodeVersion);
+        console.error('node %s does not include npm', nodeVersion);
         process.exit(1);
     }
     var npmVersion = JSON.parse(pkg).version;
