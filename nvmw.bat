@@ -8,7 +8,7 @@ if not defined PATH_ORG (
   set "PATH_ORG=%PATH%"
 )
 
-if exist "%PROGRAMFILES(X86)%" (
+if exist "%PROGRAMFILES(X86)%" if not "%3" == "x86" (
   set OS_ARCH=64
 ) else (
   set OS_ARCH=32
@@ -50,15 +50,18 @@ echo;
 echo Node Version Manager for Windows
 echo;
 echo Usage:
-echo   nvmw help                    Show this message
-echo   nvmw install [version]       Download and install a [version]
-echo   nvmw uninstall [version]     Uninstall a [version]
-echo   nvmw use [version]           Modify PATH to use [version]
-echo   nvmw ls                      List installed versions
+echo   nvmw help                          Show this message
+echo   nvmw install [version] [arch]      Download and install a [version]
+echo                                        for [arch] architecture (optional)
+echo   nvmw uninstall [version]           Uninstall a [version]
+echo   nvmw use [version]                 Modify PATH to use [version]
+echo   nvmw ls                            List installed versions
 echo;
 echo Example:
 echo   nvmw install v0.10.21        Install a specific version number
 echo   nvmw use v0.10.21            Use the specific version
+echo
+echo   nvmw install v0.10.29 x86    Install a 32-bit version
 exit /b 0
 
 ::===========================================================
@@ -77,12 +80,12 @@ if %OS_ARCH% == 32 (
 ) else (
   set NODE_EXE_URL=%NVMW_NODEJS_ORG_MIRROR%/%NODE_VERSION%/x64/node.exe
 )
-echo Start installing Node %NODE_VERSION% (x%OS_ARCH%)
 
 echo Start installing Node %NODE_VERSION% (x%OS_ARCH%)
 
 set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"
 mkdir "%NODE_HOME%"
+
 set "NODE_EXE_FILE=%NODE_HOME%\node.exe"
 set "NPM_ZIP_FILE=%NODE_HOME%\npm.zip"
 
