@@ -8,7 +8,12 @@ if not defined PATH_ORG (
   set "PATH_ORG=%PATH%"
 )
 
+set IS64=FALSE
 if exist "%PROGRAMFILES(X86)%" if not "%3" == "x86" (
+  set IS64=TRUE
+)
+
+if %IS64% == TRUE (
   set OS_ARCH=64
 ) else (
   set OS_ARCH=32
