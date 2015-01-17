@@ -34,17 +34,27 @@ Usage
     Example:
       nvmw install v0.6.0          Install a specific version number
       nvmw use v0.6.0              Use the specific version
+      nvmw install iojs/v1.0.2     Install a specific version number of io.js
+      nvmw use iojs/v1.0.2         Use the specific version of io.js
 
-Mirror nodejs dist
+      nvmw install v0.10.35 x86    Install a 32-bit version
+
+Mirror node.js/io.js/npm dist
 ------------------
 
 To use a mirror of the node binaries, set `$NVMW_NODEJS_ORG_MIRROR`.
 
-e.g.: In China, you use this mirror:
+e.g.: In China, you can use these mirrors:
 
 ```bash
-set "NVMW_NODEJS_ORG_MIRROR=http://dist.u.qiniudn.com"
-nvmw install 0.11.12
+set "NVMW_NODEJS_ORG_MIRROR=http://npm.taobao.org/mirrors/node"
+set "NVMW_IOJS_ORG_MIRROR=http://npm.taobao.org/mirrors/iojs"
+set "NVMW_NPM_MIRROR=http://npm.taobao.org/mirrors/npm"
+
+nvmw install 0.11.14
+nvmw install node/v0.11.15
+nvmw install iojs/v1.0.2
+nvmw install iojs/latest
 ```
 
 FAQ

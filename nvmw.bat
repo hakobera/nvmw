@@ -20,7 +20,11 @@ if %IS64% == TRUE (
 )
 
 if not defined NVMW_NODEJS_ORG_MIRROR (
-  set "NVMW_NODEJS_ORG_MIRROR=http://nodejs.org/dist"
+  set "NVMW_NODEJS_ORG_MIRROR=https://nodejs.org/dist"
+)
+
+if not defined NVMW_IOJS_ORG_MIRROR (
+  set "NVMW_IOJS_ORG_MIRROR=https://iojs.org/dist"
 )
 
 if "%1" == "install" if not "%2" == "" (
@@ -63,10 +67,12 @@ echo   nvmw use [version]                 Modify PATH to use [version]
 echo   nvmw ls                            List installed versions
 echo;
 echo Example:
-echo   nvmw install v0.10.21        Install a specific version number
+echo   nvmw install v0.10.21        Install a specific version number of node.js
 echo   nvmw use v0.10.21            Use the specific version
-echo
-echo   nvmw install v0.10.29 x86    Install a 32-bit version
+echo   nvmw install iojs/v1.0.2     Install a specific version number of io.js
+echo   nvmw use iojs/v1.0.2         Use the specific version io.js
+echo;
+echo   nvmw install v0.10.35 x86    Install a 32-bit version
 exit /b 0
 
 ::===========================================================
@@ -75,27 +81,44 @@ exit /b 0
 :install
 setlocal
 
+set NODE_TYPE=node
 set NODE_VERSION=%1
+
+if %NODE_VERSION:~4,1% == / (
+  for /f "tokens=1,2,* delims=/" %%a in ("%NODE_VERSION%") do (
+    set NODE_TYPE=%%a
+    set NODE_VERSION=%%b
+  )
+)
+
 if not %NODE_VERSION:~0,1% == v (
-  set NODE_VERSION=v%1
+  set NODE_VERSION=v%NODE_VERSION%
 )
 
-if %OS_ARCH% == 32 (
-  set NODE_EXE_URL=%NVMW_NODEJS_ORG_MIRROR%/%NODE_VERSION%/node.exe
+if %NODE_TYPE% == iojs (
+  set DIST_URL=%%
+  if %OS_ARCH% == 32 (
+    set NODE_EXE_URL=%NVMW_IOJS_ORG_MIRROR%/%NODE_VERSION%/win-x86/iojs.exe
+  ) else (
+    set NODE_EXE_URL=%NVMW_IOJS_ORG_MIRROR%/%NODE_VERSION%/win-x64/iojs.exe
+  )
 ) else (
-  set NODE_EXE_URL=%NVMW_NODEJS_ORG_MIRROR%/%NODE_VERSION%/x64/node.exe
+  if %OS_ARCH% == 32 (
+    set NODE_EXE_URL=%NVMW_NODEJS_ORG_MIRROR%/%NODE_VERSION%/node.exe
+  ) else (
+    set NODE_EXE_URL=%NVMW_NODEJS_ORG_MIRROR%/%NODE_VERSION%/x64/node.exe
+  )
 )
 
-echo Start installing Node %NODE_VERSION% (x%OS_ARCH%)
-
-set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"
+set "NODE_HOME=%NVMW_HOME%%NODE_TYPE%\%NODE_VERSION%"
 mkdir "%NODE_HOME%"
+
+echo Start installing %NODE_TYPE%/%NODE_VERSION% (x%OS_ARCH%) to %NODE_HOME%
 
 set "NODE_EXE_FILE=%NODE_HOME%\node.exe"
 set "NPM_ZIP_FILE=%NODE_HOME%\npm.zip"
 
 if not exist "%NODE_EXE_FILE%" (
-  :: download node.exe
   cscript "%NVMW_HOME%\fget.js" %NODE_EXE_URL% "%NODE_EXE_FILE%"
 )
 
@@ -105,7 +128,7 @@ if not exist "%NODE_EXE_FILE%" (
 ) else (
   echo Start install npm
 
-  "%NODE_EXE_FILE%" "%NVMW_HOME%\get_npm.js" "%NODE_HOME%" %NODE_VERSION%
+  "%NODE_EXE_FILE%" "%NVMW_HOME%\get_npm.js" "%NODE_HOME%" "%NODE_TYPE%/%NODE_VERSION%"
   if not exist %NPM_ZIP_FILE% (
     exit /b 0;
   )
@@ -113,9 +136,12 @@ if not exist "%NODE_EXE_FILE%" (
   set "CD_ORG=%CD%"
   cd "%NODE_HOME%"
   cscript "%NVMW_HOME%\unzip.js" "%NPM_ZIP_FILE%" "%NODE_HOME%"
+  mkdir "%NODE_HOME%\node_modules"
+  move npm-* "%NODE_HOME%\node_modules\npm"
+  copy "%NODE_HOME%\node_modules\npm\bin\npm.cmd" "%NODE_HOME%\npm.cmd"
   cd "%CD_ORG%"
   if not exist "%NODE_HOME%\npm.cmd" goto install_error
-  echo npm %NPM_VERSION% install ok
+  echo npm install ok
 
   echo Finished
   endlocal
@@ -132,29 +158,38 @@ if not exist "%NODE_EXE_FILE%" (
 :uninstall
 setlocal
 
+set NODE_TYPE=node
 set NODE_VERSION=%1
+
+if %NODE_VERSION:~4,1% == / (
+  for /f "tokens=1,2,* delims=/" %%a in ("%NODE_VERSION%") do (
+    set NODE_TYPE=%%a
+    set NODE_VERSION=%%b
+  )
+)
+
 if not %NODE_VERSION:~0,1% == v (
-  set NODE_VERSION=v%1
+  set NODE_VERSION=v%NODE_VERSION%
 )
 
 if "%NVMW_CURRENT%" == "%NODE_VERSION%" (
-  echo Cannot uninstall currently-active Node version, %NODE_VERSION%
+  echo Cannot uninstall currently-active %NODE_TYPE%/%NODE_VERSION%
   exit /b 1
 )
 
-set "NODE_HOME=%NVMW_HOME%\%NODE_VERSION%"
+set "NODE_HOME=%NVMW_HOME%\%NODE_TYPE%\%NODE_VERSION%"
 set "NODE_EXE_FILE=%NODE_HOME%\node.exe"
 
 if not exist "%NODE_HOME%" (
-  echo %NODE_VERSION% is not installed
+  echo %NODE_TYPE%/%NODE_VERSION% is not installed
   exit /b 1
 ) else (
   rd /Q /S "%NODE_HOME%"
   if ERRORLEVEL == 1 (
-    echo Cannot uninstall Node version, %NODE_VERSION%
+    echo Cannot uninstall %NODE_TYPE%/%NODE_VERSION%
     exit /b 1
   ) else (
-    echo Uninstalled Node %NODE_VERSION%
+    echo Uninstalled %NODE_TYPE%/%NODE_VERSION%
     endlocal
     exit /b 0
   )
@@ -165,25 +200,43 @@ if not exist "%NODE_HOME%" (
 ::===========================================================
 :use
 setlocal
+
+set NODE_TYPE=node
 set NODE_VERSION=%1
-if not %NODE_VERSION:~0,1% == v (
-  set NODE_VERSION=v%1
+
+if %NODE_VERSION:~4,1% == / (
+  for /f "tokens=1,2,* delims=/" %%a in ("%NODE_VERSION%") do (
+    set NODE_TYPE=%%a
+    set NODE_VERSION=%%b
+  )
 )
-set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"
+
+if not %NODE_VERSION:~0,1% == v (
+  set NODE_VERSION=v%NODE_VERSION%
+)
+set "NODE_HOME=%NVMW_HOME%%NODE_TYPE%\%NODE_VERSION%"
 
 if not exist "%NODE_HOME%" (
-  echo Node %NODE_VERSION% is not installed
+  echo %NODE_TYPE%/%NODE_VERSION% is not installed
   exit /b 1
 )
 
 endlocal
 
+set NVMW_CURRENT_TYPE=node
 set NVMW_CURRENT=%1
-if not %NVMW_CURRENT:~0,1% == v (
-  set NVMW_CURRENT=v%1
+if %NVMW_CURRENT:~4,1% == / (
+  for /f "tokens=1,2,* delims=/" %%a in ("%NVMW_CURRENT%") do (
+    set NVMW_CURRENT_TYPE=%%a
+    set NVMW_CURRENT=%%b
+  )
 )
-echo Now using Node %NVMW_CURRENT%
-set "PATH=%NVMW_HOME%;%NVMW_HOME%\%NVMW_CURRENT%;%PATH_ORG%"
+
+if not %NVMW_CURRENT:~0,1% == v (
+  set NVMW_CURRENT=v%NVMW_CURRENT%
+)
+echo Now using %NVMW_CURRENT_TYPE% %NVMW_CURRENT%
+set "PATH=%NVMW_HOME%;%NVMW_HOME%\%NVMW_CURRENT_TYPE%\%NVMW_CURRENT%;%PATH_ORG%"
 exit /b 0
 
 ::===========================================================
@@ -191,12 +244,23 @@ exit /b 0
 ::===========================================================
 :ls
 setlocal
-dir "%NVMW_HOME%\v*" /b /ad
+
+echo node:
+if exist "%NVMW_HOME%\node" (
+  dir "%NVMW_HOME%\node\v*" /b /ad
+)
+echo;
+echo iojs:
+if exist "%NVMW_HOME%\iojs" (
+  dir "%NVMW_HOME%\iojs\v*" /b /ad
+)
+echo;
+
 if not defined NVMW_CURRENT (
   set NVMW_CURRENT_V=none
 ) else (
   set NVMW_CURRENT_V=%NVMW_CURRENT%
 )
-echo Current: %NVMW_CURRENT_V%
+echo Current: %NVMW_CURRENT_TYPE%/%NVMW_CURRENT_V%
 endlocal
 exit /b 0

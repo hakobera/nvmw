@@ -3,17 +3,26 @@ var util = require('util'),
     path = require('path'),
     wget = require('./wget');
 
-var NPM_PKG_JSON_URL = 'https://raw.githubusercontent.com/joyent/node/%s/deps/npm/package.json';
-var NVMW_NODEJS_ORG_MIRROR = process.env.NVMW_NODEJS_ORG_MIRROR || 'http://nodejs.org/dist';
-var BASE_URL = NVMW_NODEJS_ORG_MIRROR + '/npm/npm-%s.zip';
+var NPM_PKG_JSON_URL = 'https://raw.githubusercontent.com/%s/%s/deps/npm/package.json';
+// https://github.com/npm/npm/tags
+var NVMW_NPM_MIRROR = process.env.NVMW_NPM_MIRROR || 'https://github.com/npm/npm/archive';
+var BASE_URL = NVMW_NPM_MIRROR + '/v%s.zip';
 
 var targetDir = process.argv[2];
-var nodeVersion = process.argv[3];
+var versions = process.argv[3].split('/');
+var binType = versions[0];
+var binVersion = versions[1];
 
-var pkgUri = util.format(NPM_PKG_JSON_URL, nodeVersion);
+var pkgUri;
+if (binType === 'iojs') {
+  pkgUri = util.format(NPM_PKG_JSON_URL, 'iojs/io.js', binVersion + '-release');
+} else {
+  pkgUri = util.format(NPM_PKG_JSON_URL, 'joyent/node', binVersion);
+}
+
 wget(pkgUri, function (filename, pkg) {
     if (filename === null) {
-        console.error('node %s does not include npm', nodeVersion);
+        console.error('%s %s does not include npm', binType, binVersion);
         process.exit(1);
     }
     var npmVersion = JSON.parse(pkg).version;
