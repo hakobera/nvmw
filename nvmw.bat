@@ -115,7 +115,7 @@ mkdir "%NODE_HOME%"
 
 echo Start installing %NODE_TYPE%/%NODE_VERSION% (x%OS_ARCH%) to %NODE_HOME%
 
-set "NODE_EXE_FILE=%NODE_HOME%\node.exe"
+set "NODE_EXE_FILE=%NODE_HOME%\%NODE_TYPE%.exe"
 set "NPM_ZIP_FILE=%NODE_HOME%\npm.zip"
 
 if not exist "%NODE_EXE_FILE%" (
@@ -126,6 +126,10 @@ if not exist "%NODE_EXE_FILE%" (
   echo Download %NODE_EXE_FILE% from %NODE_EXE_URL% failed
   goto install_error
 ) else (
+  if %NODE_TYPE% == iojs (
+    copy "%NVMW_HOME%\alias-node.cmd" "%NODE_HOME%\node.cmd"
+  )
+
   echo Start install npm
 
   "%NODE_EXE_FILE%" "%NVMW_HOME%\get_npm.js" "%NODE_HOME%" "%NODE_TYPE%/%NODE_VERSION%"
