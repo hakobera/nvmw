@@ -25,18 +25,24 @@ if (binType === 'iojs') {
     var items = JSON.parse(content);
     for (var i = 0; i < items.length; i++) {
       var item = items[i];
-      if (item.version === binVersion) {
+      if (!npmVersion) {
+        // make sure has a npm version
+        npmVersion = item.npm;
+      }
+      if (item.version === binVersion && item.npm) {
         npmVersion = item.npm;
         break;
       }
     }
+
     if (!npmVersion) {
       return noNpmAndExit();
     }
     downloadNpmZip(npmVersion);
   });
 } else {
-  var pkgUri = util.format(NPM_PKG_JSON_URL, 'joyent/node', binVersion);
+  var pkgUri = util.format(NPM_PKG_JSON_URL, 'joyent/node',
+    binVersion === 'latest' ? 'master' : binVersion);
   wget(pkgUri, function (filename, pkg) {
     if (filename === null) {
       return noNpmAndExit();

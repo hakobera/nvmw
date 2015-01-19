@@ -91,7 +91,7 @@ if %NODE_VERSION:~4,1% == / (
   )
 )
 
-if not %NODE_VERSION:~0,1% == v (
+if not %NODE_VERSION:~0,1% == v if not %NODE_VERSION:~0,1% == l (
   set NODE_VERSION=v%NODE_VERSION%
 )
 
@@ -172,7 +172,7 @@ if %NODE_VERSION:~4,1% == / (
   )
 )
 
-if not %NODE_VERSION:~0,1% == v (
+if not %NODE_VERSION:~0,1% == v if not %NODE_VERSION:~0,1% == l (
   set NODE_VERSION=v%NODE_VERSION%
 )
 
@@ -215,7 +215,7 @@ if %NODE_VERSION:~4,1% == / (
   )
 )
 
-if not %NODE_VERSION:~0,1% == v (
+if not %NODE_VERSION:~0,1% == v if not %NODE_VERSION:~0,1% == l (
   set NODE_VERSION=v%NODE_VERSION%
 )
 set "NODE_HOME=%NVMW_HOME%%NODE_TYPE%\%NODE_VERSION%"
@@ -236,7 +236,7 @@ if %NVMW_CURRENT:~4,1% == / (
   )
 )
 
-if not %NVMW_CURRENT:~0,1% == v (
+if not %NVMW_CURRENT:~0,1% == v if not %NVMW_CURRENT:~0,1% == l (
   set NVMW_CURRENT=v%NVMW_CURRENT%
 )
 echo Now using %NVMW_CURRENT_TYPE% %NVMW_CURRENT%
