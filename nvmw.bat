@@ -69,8 +69,9 @@ echo;
 echo Example:
 echo   nvmw install v0.10.21        Install a specific version number of node.js
 echo   nvmw use v0.10.21            Use the specific version
-echo   nvmw install iojs/v1.0.2     Install a specific version number of io.js
-echo   nvmw use iojs/v1.0.2         Use the specific version io.js
+echo   nvmw install iojs            Install the latest version of io.js
+echo   nvmw install iojs-v1.0.2     Install a specific version number of io.js
+echo   nvmw use iojs-v1.0.2         Use the specific version io.js
 echo;
 echo   nvmw install v0.10.35 x86    Install a 32-bit version
 exit /b 0
@@ -84,13 +85,27 @@ setlocal
 set NODE_TYPE=node
 set NODE_VERSION=%1
 
-if %NODE_VERSION:~4,1% == / (
-  for /f "tokens=1,2,* delims=/" %%a in ("%NODE_VERSION%") do (
+:: nvmw install iojs-v1.0.2
+if "%NODE_VERSION:~4,1%" == "-" (
+  for /f "tokens=1,2,* delims=-" %%a in ("%NODE_VERSION%") do (
     set NODE_TYPE=%%a
     set NODE_VERSION=%%b
   )
 )
 
+:: nvmw install iojs
+if %NODE_VERSION% == iojs (
+  set NODE_TYPE=iojs
+  set NODE_VERSION=latest
+)
+
+:: nvmw install node
+if %NODE_VERSION% == node (
+  set NODE_TYPE=node
+  set NODE_VERSION=latest
+)
+
+:: iojs-1.0.0, iojs-latest
 if not %NODE_VERSION:~0,1% == v if not %NODE_VERSION:~0,1% == l (
   set NODE_VERSION=v%NODE_VERSION%
 )
@@ -165,11 +180,23 @@ setlocal
 set NODE_TYPE=node
 set NODE_VERSION=%1
 
-if %NODE_VERSION:~4,1% == / (
-  for /f "tokens=1,2,* delims=/" %%a in ("%NODE_VERSION%") do (
+if "%NODE_VERSION:~4,1%" == "-" (
+  for /f "tokens=1,2,* delims=-" %%a in ("%NODE_VERSION%") do (
     set NODE_TYPE=%%a
     set NODE_VERSION=%%b
   )
+)
+
+:: nvmw uninstall iojs
+if %NODE_VERSION% == iojs (
+  set NODE_TYPE=iojs
+  set NODE_VERSION=latest
+)
+
+:: nvmw uninstall node
+if %NODE_VERSION% == node (
+  set NODE_TYPE=node
+  set NODE_VERSION=latest
 )
 
 if not %NODE_VERSION:~0,1% == v if not %NODE_VERSION:~0,1% == l (
@@ -208,11 +235,23 @@ setlocal
 set NODE_TYPE=node
 set NODE_VERSION=%1
 
-if %NODE_VERSION:~4,1% == / (
-  for /f "tokens=1,2,* delims=/" %%a in ("%NODE_VERSION%") do (
+if "%NODE_VERSION:~4,1%" == "-" (
+  for /f "tokens=1,2,* delims=-" %%a in ("%NODE_VERSION%") do (
     set NODE_TYPE=%%a
     set NODE_VERSION=%%b
   )
+)
+
+:: nvmw use iojs
+if %NODE_VERSION% == iojs (
+  set NODE_TYPE=iojs
+  set NODE_VERSION=latest
+)
+
+:: nvmw use node
+if %NODE_VERSION% == node (
+  set NODE_TYPE=node
+  set NODE_VERSION=latest
 )
 
 if not %NODE_VERSION:~0,1% == v if not %NODE_VERSION:~0,1% == l (
@@ -229,11 +268,21 @@ endlocal
 
 set NVMW_CURRENT_TYPE=node
 set NVMW_CURRENT=%1
-if %NVMW_CURRENT:~4,1% == / (
-  for /f "tokens=1,2,* delims=/" %%a in ("%NVMW_CURRENT%") do (
+if "%NVMW_CURRENT:~4,1%" == "-" (
+  for /f "tokens=1,2,* delims=-" %%a in ("%NVMW_CURRENT%") do (
     set NVMW_CURRENT_TYPE=%%a
     set NVMW_CURRENT=%%b
   )
+)
+
+if %NVMW_CURRENT% == iojs (
+  set NVMW_CURRENT_TYPE=iojs
+  set NVMW_CURRENT=latest
+)
+
+if %NVMW_CURRENT% == node (
+  set NVMW_CURRENT_TYPE=node
+  set NVMW_CURRENT=latest
 )
 
 if not %NVMW_CURRENT:~0,1% == v if not %NVMW_CURRENT:~0,1% == l (

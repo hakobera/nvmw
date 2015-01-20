@@ -34,8 +34,9 @@ Usage
     Example:
       nvmw install v0.6.0          Install a specific version number
       nvmw use v0.6.0              Use the specific version
-      nvmw install iojs/v1.0.2     Install a specific version number of io.js
-      nvmw use iojs/v1.0.2         Use the specific version of io.js
+      nvmw install iojs            Install the latest version of io.js
+      nvmw install iojs-v1.0.2     Install a specific version number of io.js
+      nvmw use iojs-v1.0.2         Use the specific version of io.js
 
       nvmw install v0.10.35 x86    Install a 32-bit version
 
@@ -52,9 +53,9 @@ set "NVMW_IOJS_ORG_MIRROR=http://npm.taobao.org/mirrors/iojs"
 set "NVMW_NPM_MIRROR=http://npm.taobao.org/mirrors/npm"
 
 nvmw install 0.11.14
-nvmw install node/v0.11.15
-nvmw install iojs/v1.0.2
-nvmw install iojs/latest
+nvmw install node-v0.11.15
+nvmw install iojs
+nvmw install iojs-v1.0.2
 ```
 
 FAQ
