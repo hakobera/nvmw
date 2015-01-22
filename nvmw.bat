@@ -125,7 +125,10 @@ if %NODE_TYPE% == iojs (
   )
 )
 
-set "NODE_HOME=%NVMW_HOME%%NODE_TYPE%\%NODE_VERSION%"
+set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"
+if %NODE_TYPE% == iojs (
+  set "NODE_HOME=%NVMW_HOME%%NODE_TYPE%\%NODE_VERSION%"
+)
 mkdir "%NODE_HOME%"
 
 echo Start installing %NODE_TYPE%/%NODE_VERSION% (x%OS_ARCH%) to %NODE_HOME%
@@ -208,8 +211,10 @@ if "%NVMW_CURRENT%" == "%NODE_VERSION%" (
   exit /b 1
 )
 
-set "NODE_HOME=%NVMW_HOME%\%NODE_TYPE%\%NODE_VERSION%"
-set "NODE_EXE_FILE=%NODE_HOME%\node.exe"
+set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"
+if %NODE_TYPE% == iojs (
+  set "NODE_HOME=%NVMW_HOME%%NODE_TYPE%\%NODE_VERSION%"
+)
 
 if not exist "%NODE_HOME%" (
   echo %NODE_TYPE%/%NODE_VERSION% is not installed
@@ -257,7 +262,11 @@ if %NODE_VERSION% == node (
 if not %NODE_VERSION:~0,1% == v if not %NODE_VERSION:~0,1% == l (
   set NODE_VERSION=v%NODE_VERSION%
 )
-set "NODE_HOME=%NVMW_HOME%%NODE_TYPE%\%NODE_VERSION%"
+
+set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"
+if %NODE_TYPE% == iojs (
+  set "NODE_HOME=%NVMW_HOME%%NODE_TYPE%\%NODE_VERSION%"
+)
 
 if not exist "%NODE_HOME%" (
   echo %NODE_TYPE%/%NODE_VERSION% is not installed
@@ -289,7 +298,13 @@ if not %NVMW_CURRENT:~0,1% == v if not %NVMW_CURRENT:~0,1% == l (
   set NVMW_CURRENT=v%NVMW_CURRENT%
 )
 echo Now using %NVMW_CURRENT_TYPE% %NVMW_CURRENT%
-set "PATH=%NVMW_HOME%;%NVMW_HOME%\%NVMW_CURRENT_TYPE%\%NVMW_CURRENT%;%PATH_ORG%"
+
+if %NVMW_CURRENT_TYPE% == iojs (
+  set "PATH=%NVMW_HOME%;%NVMW_HOME%%NVMW_CURRENT_TYPE%\%NVMW_CURRENT%;%PATH_ORG%"
+) else (
+  set "PATH=%NVMW_HOME%;%NVMW_HOME%\%NVMW_CURRENT%;%PATH_ORG%"
+)
+
 exit /b 0
 
 ::===========================================================
@@ -299,13 +314,13 @@ exit /b 0
 setlocal
 
 echo node:
-if exist "%NVMW_HOME%\node" (
-  dir "%NVMW_HOME%\node\v*" /b /ad
+if exist "%NVMW_HOME%" (
+  dir "%NVMW_HOME%v*" /b /ad
 )
 echo;
 echo iojs:
-if exist "%NVMW_HOME%\iojs" (
-  dir "%NVMW_HOME%\iojs\v*" /b /ad
+if exist "%NVMW_HOME%iojs" (
+  dir "%NVMW_HOME%iojs\v*" /b /ad
 )
 echo;
 
