@@ -3,27 +3,67 @@ var util = require('util'),
     path = require('path'),
     wget = require('./wget');
 
-var NPM_PKG_JSON_URL = 'https://raw.githubusercontent.com/joyent/node/%s/deps/npm/package.json';
-var NVMW_NODEJS_ORG_MIRROR = process.env.NVMW_NODEJS_ORG_MIRROR || 'http://nodejs.org/dist';
-var BASE_URL = NVMW_NODEJS_ORG_MIRROR + '/npm/npm-%s.zip';
+var NPM_PKG_JSON_URL = 'https://raw.githubusercontent.com/%s/%s/deps/npm/package.json';
+// https://github.com/npm/npm/tags
+var NVMW_NPM_MIRROR = process.env.NVMW_NPM_MIRROR || 'https://github.com/npm/npm/archive';
+var BASE_URL = NVMW_NPM_MIRROR + '/v%s.zip';
 
 var targetDir = process.argv[2];
-var nodeVersion = process.argv[3];
+var versions = process.argv[3].split('/');
+var binType = versions[0];
+var binVersion = versions[1];
 
-var pkgUri = util.format(NPM_PKG_JSON_URL, nodeVersion);
-wget(pkgUri, function (filename, pkg) {
+if (binType === 'iojs') {
+  // detect npm version from https://iojs.org/dist/index.json
+  var NVMW_IOJS_ORG_MIRROR = process.env.NVMW_IOJS_ORG_MIRROR || 'https://iojs.org/dist';
+  var pkgUri = NVMW_IOJS_ORG_MIRROR + '/index.json';
+  wget(pkgUri, function (filename, content) {
     if (filename === null) {
-        console.error('node %s does not include npm', nodeVersion);
-        process.exit(1);
+      return noNpmAndExit();
     }
-    var npmVersion = JSON.parse(pkg).version;
-    var uri = util.format(BASE_URL, npmVersion);
-    wget(uri, function (filename, data) {
-        fs.writeFile(path.join(targetDir, 'npm.zip'), data, function (err) {
-            if (err) {
-                return console.log(err.message);
-            }
-            console.log('Download npm %s is done', npmVersion);
-        });
+    var npmVersion;
+    var items = JSON.parse(content);
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      if (!npmVersion) {
+        // make sure has a npm version
+        npmVersion = item.npm;
+      }
+      if (item.version === binVersion && item.npm) {
+        npmVersion = item.npm;
+        break;
+      }
+    }
+
+    if (!npmVersion) {
+      return noNpmAndExit();
+    }
+    downloadNpmZip(npmVersion);
+  });
+} else {
+  var pkgUri = util.format(NPM_PKG_JSON_URL, 'joyent/node',
+    binVersion === 'latest' ? 'master' : binVersion);
+  wget(pkgUri, function (filename, pkg) {
+    if (filename === null) {
+      return noNpmAndExit();
+    }
+    downloadNpmZip(JSON.parse(pkg).version);
+  });
+}
+
+function noNpmAndExit() {
+  console.error('%s %s does not include npm', binType, binVersion);
+  process.exit(1);
+}
+
+function downloadNpmZip(version) {
+  var uri = util.format(BASE_URL, version);
+  wget(uri, function (filename, data) {
+    fs.writeFile(path.join(targetDir, 'npm.zip'), data, function (err) {
+      if (err) {
+        return console.error(err.message);
+      }
+      console.log('Download npm %s is done', version);
     });
-});
+  });
+}
