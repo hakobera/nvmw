@@ -137,7 +137,7 @@ set "NODE_EXE_FILE=%NODE_HOME%\%NODE_TYPE%.exe"
 set "NPM_ZIP_FILE=%NODE_HOME%\npm.zip"
 
 if not exist "%NODE_EXE_FILE%" (
-  cscript "%NVMW_HOME%\fget.js" %NODE_EXE_URL% "%NODE_EXE_FILE%"
+  cscript //nologo "%NVMW_HOME%\fget.js" %NODE_EXE_URL% "%NODE_EXE_FILE%"
 )
 
 if not exist "%NODE_EXE_FILE%" (
@@ -151,13 +151,12 @@ if not exist "%NODE_EXE_FILE%" (
   echo Start install npm
 
   "%NODE_EXE_FILE%" "%NVMW_HOME%\get_npm.js" "%NODE_HOME%" "%NODE_TYPE%/%NODE_VERSION%"
-  if not exist %NPM_ZIP_FILE% (
-    exit /b 0;
-  )
+  if not exist "%NPM_ZIP_FILE%" goto install_error
 
   set "CD_ORG=%CD%"
+  %~d0
   cd "%NODE_HOME%"
-  cscript "%NVMW_HOME%\unzip.js" "%NPM_ZIP_FILE%" "%NODE_HOME%"
+  cscript //nologo "%NVMW_HOME%\unzip.js" "%NPM_ZIP_FILE%" "%NODE_HOME%"
   mkdir "%NODE_HOME%\node_modules"
   move npm-* "%NODE_HOME%\node_modules\npm"
   copy "%NODE_HOME%\node_modules\npm\bin\npm.cmd" "%NODE_HOME%\npm.cmd"
@@ -301,8 +300,10 @@ echo Now using %NVMW_CURRENT_TYPE% %NVMW_CURRENT%
 
 if %NVMW_CURRENT_TYPE% == iojs (
   set "PATH=%NVMW_HOME%;%NVMW_HOME%%NVMW_CURRENT_TYPE%\%NVMW_CURRENT%;%PATH_ORG%"
+  set "NODE_PATH=%NVMW_HOME%%NVMW_CURRENT_TYPE%\%NVMW_CURRENT%\node_modules"
 ) else (
   set "PATH=%NVMW_HOME%;%NVMW_HOME%\%NVMW_CURRENT%;%PATH_ORG%"
+  set "NODE_PATH=%NVMW_HOME%\%NVMW_CURRENT%\node_modules"
 )
 
 exit /b 0

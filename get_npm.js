@@ -59,6 +59,10 @@ function noNpmAndExit() {
 function downloadNpmZip(version) {
   var uri = util.format(BASE_URL, version);
   wget(uri, function (filename, data) {
+    if (filename === null) {
+        console.error('Can\'t get npm: ' + uri);
+        process.exit(1);
+    }
     fs.writeFile(path.join(targetDir, 'npm.zip'), data, function (err) {
       if (err) {
         return console.error(err.message);
