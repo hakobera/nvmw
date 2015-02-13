@@ -412,6 +412,6 @@ if not defined NVMW_CURRENT (
 ) else (
   set NVMW_CURRENT_V=%NVMW_CURRENT%
 )
-echo Current: %NVMW_CURRENT_TYPE%/%NVMW_CURRENT_V%
+echo Current: %NVMW_CURRENT_TYPE%/%NVMW_CURRENT_V% %NVMW_CURRENT_ARCH%
 endlocal
 exit /b 0
