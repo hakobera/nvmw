@@ -13,12 +13,6 @@ if exist "%PROGRAMFILES(X86)%" if not "%3" == "x86" (
   set IS64=TRUE
 )
 
-if %IS64% == TRUE (
-  set OS_ARCH=64
-) else (
-  set OS_ARCH=32
-)
-
 if not defined NVMW_NODEJS_ORG_MIRROR (
   set "NVMW_NODEJS_ORG_MIRROR=https://nodejs.org/dist"
 )
@@ -28,7 +22,7 @@ if not defined NVMW_IOJS_ORG_MIRROR (
 )
 
 if "%1" == "install" if not "%2" == "" (
-  call :install %2
+  call :install %2 %3
   if not ERRORLEVEL == 1 call :use %2
   exit /b %ERRORLEVEL%
 )
@@ -82,6 +76,16 @@ exit /b 0
 :install
 setlocal
 
+if %IS64% == TRUE (
+  set OS_ARCH=x64
+) else (
+  set OS_ARCH=x32
+)
+
+if not "%2" == "" (
+  set OS_ARCH=%2
+)
+
 set NODE_TYPE=node
 set NODE_VERSION=%1
 
@@ -112,13 +116,13 @@ if not %NODE_VERSION:~0,1% == v if not %NODE_VERSION:~0,1% == l (
 
 if %NODE_TYPE% == iojs (
   set DIST_URL=%%
-  if %OS_ARCH% == 32 (
+  if %OS_ARCH% == x32 (
     set NODE_EXE_URL=%NVMW_IOJS_ORG_MIRROR%/%NODE_VERSION%/win-x86/iojs.exe
   ) else (
     set NODE_EXE_URL=%NVMW_IOJS_ORG_MIRROR%/%NODE_VERSION%/win-x64/iojs.exe
   )
 ) else (
-  if %OS_ARCH% == 32 (
+  if %OS_ARCH% == x32 (
     set NODE_EXE_URL=%NVMW_NODEJS_ORG_MIRROR%/%NODE_VERSION%/node.exe
   ) else (
     set NODE_EXE_URL=%NVMW_NODEJS_ORG_MIRROR%/%NODE_VERSION%/x64/node.exe
@@ -131,14 +135,16 @@ if %NODE_TYPE% == iojs (
 )
 mkdir "%NODE_HOME%"
 
-echo Start installing %NODE_TYPE%/%NODE_VERSION% (x%OS_ARCH%) to %NODE_HOME%
+echo Start installing %NODE_TYPE%/%NODE_VERSION% (%OS_ARCH%) to %NODE_HOME%
 
 set "NODE_EXE_FILE=%NODE_HOME%\%NODE_TYPE%.exe"
 set "NPM_ZIP_FILE=%NODE_HOME%\npm.zip"
 
-if not exist "%NODE_EXE_FILE%" (
-  cscript //nologo "%NVMW_HOME%\fget.js" %NODE_EXE_URL% "%NODE_EXE_FILE%"
+if exist "%NODE_EXE_FILE%" (
+  del "%NODE_EXE_FILE%"
 )
+
+cscript //nologo "%NVMW_HOME%\fget.js" %NODE_EXE_URL% "%NODE_EXE_FILE%"
 
 if not exist "%NODE_EXE_FILE%" (
   echo Download %NODE_EXE_FILE% from %NODE_EXE_URL% failed
@@ -156,8 +162,10 @@ if not exist "%NODE_EXE_FILE%" (
   set "CD_ORG=%CD%"
   %~d0
   cd "%NODE_HOME%"
+  echo Start unzip "%NPM_ZIP_FILE%" to "%NODE_HOME%"
   cscript //nologo "%NVMW_HOME%\unzip.js" "%NPM_ZIP_FILE%" "%NODE_HOME%"
   mkdir "%NODE_HOME%\node_modules"
+  rmdir /s /q "%NODE_HOME%\node_modules\npm"
   move npm-* "%NODE_HOME%\node_modules\npm"
   copy "%NODE_HOME%\node_modules\npm\bin\npm.cmd" "%NODE_HOME%\npm.cmd"
   cd "%CD_ORG%"
