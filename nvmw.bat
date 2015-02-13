@@ -9,8 +9,14 @@ if not defined PATH_ORG (
 )
 
 set IS64=FALSE
-if exist "%PROGRAMFILES(X86)%" if not "%3" == "x86" (
+if exist "%PROGRAMFILES(X86)%" (
   set IS64=TRUE
+)
+
+if %IS64% == TRUE (
+  set OS_ARCH=x64
+) else (
+  set OS_ARCH=x32
 )
 
 if not defined NVMW_NODEJS_ORG_MIRROR (
@@ -23,12 +29,12 @@ if not defined NVMW_IOJS_ORG_MIRROR (
 
 if "%1" == "install" if not "%2" == "" (
   call :install %2 %3
-  if not ERRORLEVEL == 1 call :use %2
+  if not ERRORLEVEL == 1 call :use %2 %3
   exit /b %ERRORLEVEL%
 )
 
 if "%1" == "use" if not "%2" == "" (
-  call :use %2
+  call :use %2 %3
   exit /b %ERRORLEVEL%
 )
 
@@ -38,7 +44,7 @@ if "%1" == "ls" (
 )
 
 if "%1" == "uninstall" if not "%2" == "" (
-  call :uninstall %2
+  call :uninstall %2 %3
   exit /b %ERRORLEVEL%
 )
 
@@ -76,20 +82,16 @@ exit /b 0
 :install
 setlocal
 
-if %IS64% == TRUE (
-  set OS_ARCH=x64
-) else (
-  set OS_ARCH=x32
-)
+set ARCH=%OS_ARCH%
 
 if not "%2" == "" (
-  set OS_ARCH=%2
+  set ARCH=%2
   :: x86, ia32 alias x32
   if "%2" == "x86" (
-    set OS_ARCH=x32
+    set ARCH=x32
   )
   if "%2" == "ia32" (
-    set OS_ARCH=x32
+    set ARCH=x32
   )
 )
 
@@ -123,13 +125,13 @@ if not %NODE_VERSION:~0,1% == v if not %NODE_VERSION:~0,1% == l (
 
 if %NODE_TYPE% == iojs (
   set DIST_URL=%%
-  if %OS_ARCH% == x32 (
+  if %ARCH% == x32 (
     set NODE_EXE_URL=%NVMW_IOJS_ORG_MIRROR%/%NODE_VERSION%/win-x86/iojs.exe
   ) else (
     set NODE_EXE_URL=%NVMW_IOJS_ORG_MIRROR%/%NODE_VERSION%/win-x64/iojs.exe
   )
 ) else (
-  if %OS_ARCH% == x32 (
+  if %ARCH% == x32 (
     set NODE_EXE_URL=%NVMW_NODEJS_ORG_MIRROR%/%NODE_VERSION%/node.exe
   ) else (
     set NODE_EXE_URL=%NVMW_NODEJS_ORG_MIRROR%/%NODE_VERSION%/x64/node.exe
@@ -140,16 +142,23 @@ set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"
 if %NODE_TYPE% == iojs (
   set "NODE_HOME=%NVMW_HOME%%NODE_TYPE%\%NODE_VERSION%"
 )
-mkdir "%NODE_HOME%"
 
-echo Start installing %NODE_TYPE%/%NODE_VERSION% (%OS_ARCH%) to %NODE_HOME%
+if not %ARCH% == %OS_ARCH% (
+  set "NODE_HOME=%NODE_HOME%-%ARCH%"
+)
 
 set "NODE_EXE_FILE=%NODE_HOME%\%NODE_TYPE%.exe"
 set "NPM_ZIP_FILE=%NODE_HOME%\npm.zip"
 
 if exist "%NODE_EXE_FILE%" (
-  del "%NODE_EXE_FILE%"
+  endlocal
+  echo "%NODE_TYPE%/%NODE_VERSION% (%ARCH%)" already exists, please uninstall it first
+  exit /b 1
 )
+
+mkdir "%NODE_HOME%"
+
+echo Start installing %NODE_TYPE%/%NODE_VERSION% (%ARCH%) to %NODE_HOME%
 
 cscript //nologo "%NVMW_HOME%\fget.js" %NODE_EXE_URL% "%NODE_EXE_FILE%"
 
@@ -194,6 +203,19 @@ if not exist "%NODE_EXE_FILE%" (
 :uninstall
 setlocal
 
+set ARCH=%OS_ARCH%
+
+if not "%2" == "" (
+  set ARCH=%2
+  :: x86, ia32 alias x32
+  if "%2" == "x86" (
+    set ARCH=x32
+  )
+  if "%2" == "ia32" (
+    set ARCH=x32
+  )
+)
+
 set NODE_TYPE=node
 set NODE_VERSION=%1
 
@@ -220,8 +242,8 @@ if not %NODE_VERSION:~0,1% == v if not %NODE_VERSION:~0,1% == l (
   set NODE_VERSION=v%NODE_VERSION%
 )
 
-if "%NVMW_CURRENT%" == "%NODE_VERSION%" (
-  echo Cannot uninstall currently-active %NODE_TYPE%/%NODE_VERSION%
+if "%NVMW_CURRENT_TYPE%" == "%NODE_TYPE%" if "%NVMW_CURRENT%" == "%NODE_VERSION%" if "%NVMW_CURRENT_ARCH%" == "%ARCH%" (
+  echo Cannot uninstall currently-active %NODE_TYPE%/%NODE_VERSION% %ARCH%
   exit /b 1
 )
 
@@ -230,16 +252,20 @@ if %NODE_TYPE% == iojs (
   set "NODE_HOME=%NVMW_HOME%%NODE_TYPE%\%NODE_VERSION%"
 )
 
+if not %ARCH% == %OS_ARCH% (
+  set "NODE_HOME=%NODE_HOME%-%ARCH%"
+)
+
 if not exist "%NODE_HOME%" (
-  echo %NODE_TYPE%/%NODE_VERSION% is not installed
+  echo %NODE_TYPE%/%NODE_VERSION% %ARCH% is not installed
   exit /b 1
 ) else (
   rd /Q /S "%NODE_HOME%"
   if ERRORLEVEL == 1 (
-    echo Cannot uninstall %NODE_TYPE%/%NODE_VERSION%
+    echo Cannot uninstall %NODE_TYPE%/%NODE_VERSION% %ARCH%
     exit /b 1
   ) else (
-    echo Uninstalled %NODE_TYPE%/%NODE_VERSION%
+    echo Uninstalled %NODE_TYPE%/%NODE_VERSION% %ARCH%
     endlocal
     exit /b 0
   )
@@ -250,6 +276,19 @@ if not exist "%NODE_HOME%" (
 ::===========================================================
 :use
 setlocal
+
+set ARCH=%OS_ARCH%
+
+if not "%2" == "" (
+  set ARCH=%2
+  :: x86, ia32 alias x32
+  if "%2" == "x86" (
+    set ARCH=x32
+  )
+  if "%2" == "ia32" (
+    set ARCH=x32
+  )
+)
 
 set NODE_TYPE=node
 set NODE_VERSION=%1
@@ -282,12 +321,28 @@ if %NODE_TYPE% == iojs (
   set "NODE_HOME=%NVMW_HOME%%NODE_TYPE%\%NODE_VERSION%"
 )
 
+if not %ARCH% == %OS_ARCH% (
+  set "NODE_HOME=%NODE_HOME%-%ARCH%"
+)
+
 if not exist "%NODE_HOME%" (
   echo %NODE_TYPE%/%NODE_VERSION% is not installed
   exit /b 1
 )
 
 endlocal
+
+set NVMW_CURRENT_ARCH=%OS_ARCH%
+if not "%2" == "" (
+  set NVMW_CURRENT_ARCH=%2
+  :: x86, ia32 alias x32
+  if "%2" == "x86" (
+    set NVMW_CURRENT_ARCH=x32
+  )
+  if "%2" == "ia32" (
+    set NVMW_CURRENT_ARCH=x32
+  )
+)
 
 set NVMW_CURRENT_TYPE=node
 set NVMW_CURRENT=%1
@@ -311,14 +366,26 @@ if %NVMW_CURRENT% == node (
 if not %NVMW_CURRENT:~0,1% == v if not %NVMW_CURRENT:~0,1% == l (
   set NVMW_CURRENT=v%NVMW_CURRENT%
 )
-echo Now using %NVMW_CURRENT_TYPE% %NVMW_CURRENT%
+
+echo Now using %NVMW_CURRENT_TYPE% %NVMW_CURRENT% %NVMW_CURRENT_ARCH%
+
+set "NODE_HOME=%NVMW_HOME%%NODE_VERSION%"
+if %NVMW_CURRENT_TYPE% == iojs (
+  set "NODE_HOME=%NVMW_HOME%%NODE_TYPE%\%NODE_VERSION%"
+)
+
+if not %NVMW_CURRENT_ARCH% == %OS_ARCH% (
+  set NVMW_CURRENT_ARCH_PADDING=-%NVMW_CURRENT_ARCH%
+) else (
+  set NVMW_CURRENT_ARCH_PADDING=
+)
 
 if %NVMW_CURRENT_TYPE% == iojs (
-  set "PATH=%NVMW_HOME%;%NVMW_HOME%%NVMW_CURRENT_TYPE%\%NVMW_CURRENT%;%PATH_ORG%"
-  set "NODE_PATH=%NVMW_HOME%%NVMW_CURRENT_TYPE%\%NVMW_CURRENT%\node_modules"
+  set "PATH=%NVMW_HOME%;%NVMW_HOME%%NVMW_CURRENT_TYPE%\%NVMW_CURRENT%%NVMW_CURRENT_ARCH_PADDING%;%PATH_ORG%"
+  set "NODE_PATH=%NVMW_HOME%%NVMW_CURRENT_TYPE%\%NVMW_CURRENT%%NVMW_CURRENT_ARCH_PADDING%\node_modules"
 ) else (
-  set "PATH=%NVMW_HOME%;%NVMW_HOME%\%NVMW_CURRENT%;%PATH_ORG%"
-  set "NODE_PATH=%NVMW_HOME%\%NVMW_CURRENT%\node_modules"
+  set "PATH=%NVMW_HOME%;%NVMW_HOME%\%NVMW_CURRENT%%NVMW_CURRENT_ARCH_PADDING%;%PATH_ORG%"
+  set "NODE_PATH=%NVMW_HOME%\%NVMW_CURRENT%%NVMW_CURRENT_ARCH_PADDING%\node_modules"
 )
 
 exit /b 0
