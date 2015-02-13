@@ -84,6 +84,13 @@ if %IS64% == TRUE (
 
 if not "%2" == "" (
   set OS_ARCH=%2
+  :: x86, ia32 alias x32
+  if "%2" == "x86" (
+    set OS_ARCH=x32
+  )
+  if "%2" == "ia32" (
+    set OS_ARCH=x32
+  )
 )
 
 set NODE_TYPE=node
