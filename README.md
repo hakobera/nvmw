@@ -38,7 +38,18 @@ Usage
       nvmw install iojs-v1.0.2     Install a specific version number of io.js
       nvmw use iojs-v1.0.2         Use the specific version of io.js
 
-      nvmw install v0.10.35 x86    Install a 32-bit version
+### Support install with arch
+
+arch support values: `x86`, `x64`
+
+    Usage:
+      nvmw install [version] [arch]    Download and install a [version] on the [arch]
+      nvmw uninstall [version] [arch]  Uninstall a [version] on the [arch]
+      nvmw use [version] [arch]        Modify PATH to use [version] on the [arch]
+
+    Example:
+      nvmw install v0.12.0 x86         Install a specific 32-bit version
+      nvmw use v0.12.0 x86             Use the specific 32-bit version
 
 Mirror node.js/io.js/npm dist
 ------------------
