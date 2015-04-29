@@ -403,7 +403,7 @@ if exist "%NVMW_HOME%" (
 echo;
 echo iojs:
 if exist "%NVMW_HOME%iojs" (
-  dir "%NVMW_HOME%iojs\v*" /b /ad
+  dir "%NVMW_HOME%iojs\*" /b /ad
 )
 echo;
 
