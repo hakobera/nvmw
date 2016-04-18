@@ -1,3 +1,5 @@
+**SORRY, nvmw is no longer maintained. If someone wants to keep maintained, contact me by [email](mailto://hakobera@gmail.com) or [twitter](https://twitter.com/hakobera).**
+
 Node Version Manager for Windows
 ================================
 nvmw is a simple Node Version Manager for Windows.
